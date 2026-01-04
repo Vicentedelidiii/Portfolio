@@ -1,0 +1,728 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="./style.css" rel="stylesheet">
+  <style>
+                                /* Up and down animation for III */
+                                @keyframes upDown {
+                                    0%, 100% { transform: translateY(0); }
+                                    50% { transform: translateY(-10px); }
+                                }
+                                .updown-animate {
+                                    display: inline-block;
+                                    animation: upDown 1.6s infinite;
+                                }
+                        /* Skill card animation */
+                        .skill-badge {
+                            transition: transform 0.3s cubic-bezier(.4,2,.6,1), box-shadow 0.3s;
+                        }
+                        .skill-badge:hover {
+                            transform: scale(1.08) rotate(-2deg);
+                            box-shadow: 0 8px 24px 0 rgba(246,42,0,0.15), 0 1.5px 6px 0 rgba(30,101,109,0.10);
+                            z-index: 1;
+                        }
+                /* Certificate image fix */
+                .certificate-img {
+                    max-width: 100%;
+                    max-height: 100%;
+                    object-fit: contain;
+                    display: block;
+                }
+        :root {
+            --navy: #00293C;
+            --peacock-blue: #1E656D;
+            --ivory: #F1F3CE;
+            --candy-apple: #F62A00;
+        }
+        
+        body {
+            background-color: var(--navy);
+            color: var(--ivory);
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            scroll-behavior: smooth;
+            overflow-x: hidden;
+        }
+        
+        /* Custom animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+        
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            max-width: 90%;
+            max-height: 90%;
+            position: relative;
+        }
+        
+        .modal-image {
+            max-width: 100%;
+            max-height: 80vh;
+            object-fit: contain;
+        }
+        
+        .modal-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(246, 42, 0, 0.8);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+        
+        .modal-nav:hover {
+            background: rgba(246, 42, 0, 1);
+        }
+        
+        .modal-nav.prev {
+            left: 20px;
+        }
+        
+        .modal-nav.next {
+            right: 20px;
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(246, 42, 0, 0.8);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .modal-close:hover {
+            background: rgba(246, 42, 0, 1);
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--navy);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--peacock-blue);
+            border-radius: 5px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--candy-apple);
+        }
+        
+        /* Smooth transitions */
+        .transition-all-custom {
+            transition: all 0.3s ease;
+        }
+        
+        /* Gallery image hover effect */
+        .gallery-item {
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        
+        .gallery-item:hover {
+            transform: scale(1.02);
+        }
+        
+        /* Image counter */
+        .image-counter {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+    </style>
+
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="fixed w-full bg-[#1E656D] z-50 shadow-lg">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex justify-between items-center">
+                <!-- Logo -->
+                <a href="#" class="text-xl font-bold hover:text-[#F62A00] transition-all-custom">
+                    Vicente Delid III
+                </a>
+                
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex space-x-8">
+                    <a href="#about" class="hover:text-[#F62A00] transition-all-custom">About</a>
+                    <a href="#skills" class="hover:text-[#F62A00] transition-all-custom">Skills</a>
+                    <a href="#certificates" class="hover:text-[#F62A00] transition-all-custom">Certificates</a>
+                    <a href="#projects" class="hover:text-[#F62A00] transition-all-custom">Projects</a>
+                    <a href="#contact" class="hover:text-[#F62A00] transition-all-custom">Contact</a>
+                </div>
+                
+                <!-- Mobile Menu Button -->
+                <button id="mobile-menu-button" class="md:hidden text-2xl">
+                    ☰
+                </button>
+            </div>
+            
+            <!-- Mobile Menu (Hidden by default) -->
+            <div id="mobile-menu" class="hidden md:hidden mt-4 space-y-3 pb-2">
+                <a href="#about" class="block hover:text-[#F62A00] transition-all-custom">About</a>
+                <a href="#skills" class="block hover:text-[#F62A00] transition-all-custom">Skills</a>
+                <a href="#certificates" class="block hover:text-[#F62A00] transition-all-custom">Certificates</a>
+                <a href="#projects" class="block hover:text-[#F62A00] transition-all-custom">Projects</a>
+                <a href="#contact" class="block hover:text-[#F62A00] transition-all-custom">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Image Viewer Modal -->
+    <div id="imageModal" class="modal">
+        <button class="modal-close">&times;</button>
+        
+        <button class="modal-nav prev">‹</button>
+        <button class="modal-nav next">›</button>
+        
+        <div class="modal-content">
+            <img id="modalImage" class="modal-image" src="" alt="Viewer image">
+            <div id="imageCounter" class="image-counter">1 / 1</div>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="pt-24 pb-16 px-4 md:pt-32 md:pb-20 fade-in">
+        <div class="container mx-auto">
+            <div class="flex flex-col md:flex-row items-center">
+                <!-- Profile Image and Introduction -->
+                <div class="md:w-1/2 mb-10 md:mb-0 md:pr-12">
+                    <div class="flex justify-center">
+                        <div class="w-48 h-48 md:w-64 md:h-64 rounded-full overflow-hidden border-4 border-[#1E656D] shadow-lg">
+                            <!-- Placeholder for profile image -->
+                            <div class="w-full h-full bg-[#1E656D] flex items-center justify-center">
+                                <img src="images/aaa.png" alt="">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Hero Text and Button -->
+                <div class="md:w-1/2 text-center md:text-left">
+                    <h1 class="text-4xl md:text-5xl font-bold mb-4">Vicente Delid <span class="updown-animate">III</span></h1>
+                    <h2 class="text-xl md:text-2xl text-[#F1F3CE] mb-6">IT Student & UI/UX Designer</h2>
+                    <p class="text-lg mb-8 max-w-2xl">
+                        Passionate IT student specializing in UI and UX design. 
+                        Currently pursuing a Bachelor's in Information Technology with hands-on experience 
+                        in modern web technologies and web design practices.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4 sm:gap-6 items-center justify-center md:justify-start">
+                        <a href="Vicenete_Delid_III_CV.pdf" download="Vicenete_Delid_III_CV.pdf" class="inline-block bg-[#F62A00] hover:bg-red-700 text-white font-bold py-3 px-8 rounded-lg transition-all-custom shadow-lg">
+                            Download CV
+                        </a>
+                        <a href="#projects" class="inline-block bg-[#F62A00] hover:bg-red-700 text-white font-bold py-3 px-8 rounded-lg transition-all-custom shadow-lg">
+                            View Projects
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-16 px-4 bg-[#1E656D]/20">
+        <div class="container mx-auto">
+            <h2 class="text-3xl font-bold text-center mb-12">About Me</h2>
+            
+            <div class="flex flex-col md:flex-row gap-8">
+                <!-- Left Column: Personal Introduction -->
+                <div class="md:w-1/2">
+                    <div class="bg-gradient-to-br from-[#1E656D] to-[#00293C] p-8 rounded-2xl shadow-lg border-l-4 border-[#F62A00] h-full relative">
+                        <div class="absolute right-6 top-6 opacity-10 text-7xl pointer-events-none select-none">💡</div>
+                        <h3 class="text-2xl font-bold mb-4 flex items-center gap-2 text-[#F62A00]">
+                            <span>👤</span> Personal Introduction
+                        </h3>
+                        <blockquote class="mb-4 italic text-lg text-[#F1F3CE] border-l-4 border-[#F62A00] pl-4 bg-[#1E656D]/40 rounded">
+                            I'm Vicente Delid, a third-year IT student with a strong focus on UI and UX design. I enjoy creating intuitive and visually appealing digital experiences that provide real value to users.
+                        </blockquote>
+                        <p class="text-[#F1F3CE]/90">
+                            I believe in combining <span class="text-[#F62A00] font-semibold">creativity</span> with <span class="text-[#F62A00] font-semibold">usability</span>, following best practices in design and development. When I'm not designing interfaces, I explore new design tools, participate in design challenges, and collaborate on projects to enhance my skills.
+                        </p>
+                        <p class="text-[#F1F3CE]/90 mt-3">
+                            Outside of academics and design, I enjoy playing video games, exploring new game genres, and sometimes just relaxing with friends while playing another round of my favorite games. Gaming helps me recharge and inspires my creativity in design.
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Right Column: Education and Experience -->
+                <div class="md:w-1/2 space-y-8">
+                    <!-- Education -->
+                    <div class="bg-gradient-to-br from-[#1E656D] to-[#00293C] p-8 rounded-2xl shadow-lg border-l-4 border-[#F62A00]">
+                        <h3 class="text-2xl font-bold mb-4 flex items-center gap-2 text-[#F62A00]">
+                            <span>🎓</span> Education
+                        </h3>
+                        <div class="mb-4">
+                            <h4 class="text-xl font-semibold text-[#F1F3CE]">Bachelor of Science in Information Technology</h4>
+                            <p class="text-[#F1F3CE]/80">Filamer Christian University</p>
+                            <p class="text-[#F62A00] font-semibold">2023 - Present</p>
+                        </div>
+                    </div>
+                    <!-- Experience -->
+                    <div class="bg-gradient-to-br from-[#1E656D] to-[#00293C] p-8 rounded-2xl shadow-lg border-l-4 border-[#F62A00]">
+                        <h3 class="text-2xl font-bold mb-4 flex items-center gap-2 text-[#F62A00]">
+                            <span>💼</span> Experience
+                        </h3>
+                        <div class="mb-4">
+                            <h4 class="text-xl font-semibold text-[#F1F3CE]">UI/UX Designer</h4>
+                            <p class="text-[#F1F3CE]/80">Filamer Christian University • Jun 2023</p>
+                            <p class="mt-2 text-[#F1F3CE]/90">I help design clean and user friendly interfaces that focus on a good user experience.</p>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Skills Section - Updated with new skills -->
+    <section id="skills" class="py-16 px-4">
+        <div class="container mx-auto">
+            <h2 class="text-3xl font-bold text-center mb-12">Technical Skills</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Front-End Skills -->
+                <div class="bg-gradient-to-br from-[#1E656D] to-[#00293C] p-6 rounded-xl shadow-lg hover:border hover:border-[#F62A00] transition-all-custom">
+                    <h3 class="text-2xl font-bold mb-6 text-center">Front-End</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="skill-badge p-4 rounded-lg text-center bg-[#00293C] border border-[#F1F3CE] font-medium">HTML</div>
+                        <div class="skill-badge p-4 rounded-lg text-center bg-[#00293C] border border-[#F1F3CE] font-medium">CSS</div>
+                        <div class="skill-badge p-4 rounded-lg text-center bg-[#00293C] border border-[#F1F3CE] font-medium">Tailwind</div>
+                        <div class="skill-badge p-4 rounded-lg text-center bg-[#00293C] border border-[#F1F3CE] font-medium">JavaScript</div>
+                    </div>
+                </div>
+                
+                <!-- Back-End Skills -->
+                <div class="bg-gradient-to-br from-[#1E656D] to-[#00293C] p-6 rounded-xl shadow-lg hover:border hover:border-[#F62A00] transition-all-custom">
+                    <h3 class="text-2xl font-bold mb-6 text-center">Back-End</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="skill-badge p-4 rounded-lg text-center bg-[#00293C] border border-[#F1F3CE] font-medium">Python</div>
+                        <div class="skill-badge p-4 rounded-lg text-center bg-[#00293C] border border-[#F1F3CE] font-medium">Java</div>
+                        <div class="skill-badge p-4 rounded-lg text-center bg-[#00293C] border border-[#F1F3CE] font-medium">PHP</div>
+                        <div class="skill-badge p-4 rounded-lg text-center bg-[#00293C] border border-[#F1F3CE] font-medium">Laravel</div>
+                        <div class="skill-badge p-4 rounded-lg text-center bg-[#00293C] border border-[#F1F3CE] font-medium">Django</div>
+                        <div class="skill-badge p-4 rounded-lg text-center bg-[#00293C] border border-[#F1F3CE] font-medium">MySQL</div>
+                    </div>
+                </div>
+                
+                <!-- Tools -->
+                <div class="bg-gradient-to-br from-[#1E656D] to-[#00293C] p-6 rounded-xl shadow-lg hover:border hover:border-[#F62A00] transition-all-custom">
+                    <h3 class="text-2xl font-bold mb-6 text-center">Tools</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="skill-badge p-4 rounded-lg text-center bg-[#00293C] border border-[#F1F3CE] font-medium">Git</div>
+                        <div class="skill-badge p-4 rounded-lg text-center bg-[#00293C] border border-[#F1F3CE] font-medium">GitHub</div>
+                        <div class="skill-badge p-4 rounded-lg text-center bg-[#00293C] border border-[#F1F3CE] font-medium">VS Code</div>
+                        <div class="skill-badge p-4 rounded-lg text-center bg-[#00293C] border border-[#F1F3CE] font-medium">Dev Tools</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Certificates Section -->
+    <section id="certificates" class="py-16 px-4 bg-[#1E656D]/20">
+        <div class="container mx-auto">
+            <h2 class="text-3xl font-bold text-center mb-12">Certificates</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Certificate 1 -->
+                <div class="bg-[#1E656D] rounded-xl shadow-lg overflow-hidden">
+                    <div class="h-40 bg-[#00293C] flex items-center justify-center gallery-item" data-gallery="certificates" data-index="0">
+                        <img src="images/cer1.jpg" alt="" class="certificate-img">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-2">C# Algorithms</h3>
+                        <p class="mb-4 text-[#F1F3CE]/80">LinkedIn learning • 2025</p>
+                        <p class="mb-6">Gain hands-on experience with built-in C# algorithms and develop custom solutions for efficient data handling.</p>
+                        <button class="view-certificate-btn inline-block bg-[#F62A00] hover:bg-red-700 text-white font-medium py-2 px-4 rounded transition-all-custom" data-gallery="certificates" data-index="0">
+                            View Certificate
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Certificate 2 -->
+                <div class="bg-[#1E656D] rounded-xl shadow-lg overflow-hidden">
+                    <div class="h-40 bg-[#00293C] flex items-center justify-center gallery-item" data-gallery="certificates" data-index="1">
+                        <img src="images/cer2.jpg" alt="" class="certificate-img">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-2">Cybersecurity with Cloud Computing</h3>
+                        <p class="mb-4 text-[#F1F3CE]/80">LinkedIn learning • 2025</p>
+                        <p class="mb-6">Learn to implement cloud security controls, including encryption, logging, and monitoring.</p>
+                        <button class="view-certificate-btn inline-block bg-[#F62A00] hover:bg-red-700 text-white font-medium py-2 px-4 rounded transition-all-custom" data-gallery="certificates" data-index="1">
+                            View Certificate
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Certificate 3 -->
+                <div class="bg-[#1E656D] rounded-xl shadow-lg overflow-hidden">
+                    <div class="h-40 bg-[#00293C] flex items-center justify-center gallery-item" data-gallery="certificates" data-index="2">
+                        <img src="images/cer3.jpg" alt="" class="certificate-img">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-2">Debugging in C#</h3>
+                        <p class="mb-4 text-[#F1F3CE]/80">LinkedIn learning • 2025</p>
+                        <p class="mb-6">Explore defensive programming practices to prevent bugs and make programs more secure and reliable.</p>
+                        <button class="view-certificate-btn inline-block bg-[#F62A00] hover:bg-red-700 text-white font-medium py-2 px-4 rounded transition-all-custom" data-gallery="certificates" data-index="2">
+                            View Certificate
+                        </button>
+                    </div>
+                </div>
+                <!-- Certificate 4 -->
+                <div class="bg-[#1E656D] rounded-xl shadow-lg overflow-hidden">
+                    <div class="h-40 bg-[#00293C] flex items-center justify-center gallery-item" data-gallery="certificates" data-index="2">
+                        <img src="images/cer4.jpg" alt="" class="certificate-img">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-2">
+
+IT Security Foundations: Core Concepts</h3>
+                        <p class="mb-4 text-[#F1F3CE]/80">LinkedIn learning • 2025</p>
+                        <p class="mb-6">Learn fundamental concepts of IT security, including threat modeling, risk assessment, and secure design principles.</p>
+                        <button class="view-certificate-btn inline-block bg-[#F62A00] hover:bg-red-700 text-white font-medium py-2 px-4 rounded transition-all-custom" data-gallery="certificates" data-index="2">
+                            View Certificate
+                        </button>
+                    </div>
+                </div>
+                <!-- Certificate 5 -->
+                <div class="bg-[#1E656D] rounded-xl shadow-lg overflow-hidden">
+                    <div class="h-40 bg-[#00293C] flex items-center justify-center gallery-item" data-gallery="certificates" data-index="2">
+                        <img src="images/cer5.png" alt="" class="certificate-img">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-2">Ignite Bootcamp - Venture Idea Development - Philippines</h3>
+                        <p class="mb-4 text-[#F1F3CE]/80">Wadhwani Foundation • 2025</p>
+                        <p class="mb-6">An entrepreneurship bootcamp focused on venture ideation, prototyping, and business modeling.</p>
+                        <button class="view-certificate-btn inline-block bg-[#F62A00] hover:bg-red-700 text-white font-medium py-2 px-4 rounded transition-all-custom" data-gallery="certificates" data-index="2">
+                            View Certificate
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects" class="py-16 px-4">
+        <div class="container mx-auto">
+            <h2 class="text-3xl font-bold text-center mb-12">Projects</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Project 1 -->
+                <div class="bg-[#1E656D] rounded-xl shadow-lg overflow-hidden">
+                    <div class="h-48 bg-[#00293C] flex items-center justify-center gallery-item" data-gallery="projects" data-index="0">
+                        <img src="images/gun-3.png" alt="" class="certificate-img">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-2xl font-bold mb-2">E-Commerce Platform</h3>
+                        <p class="mb-4">Savage Guns is an online shopping website that displays information about firearms, accessories, and related gear.</p>
+                        
+                        <div class="flex flex-wrap gap-2 mb-6">
+                            <span class="bg-[#00293C] text-sm px-3 py-1 rounded-full">HTML</span>
+                            <span class="bg-[#00293C] text-sm px-3 py-1 rounded-full">CSS</span>
+                            <span class="bg-[#00293C] text-sm px-3 py-1 rounded-full">JavaScript</span>
+                            <span class="bg-[#00293C] text-sm px-3 py-1 rounded-full">Tailwind</span>
+                        </div>
+                        
+                        <div class="flex space-x-4 ">
+                            <button class="view-project-btn flex-1 bg-[#F62A00] hover:bg-red-700 text-white font-medium py-2 px-4 rounded text-center transition-all-custom" data-gallery="projects" data-index="0">
+                                View Project
+                            </button>
+                            <a href="https://github.com/Lao-Mao21/GunDealership.git" class="flex-1 border border-[#F62A00] text-[#F62A00] hover:bg-[#F62A00] hover:text-white font-medium py-2 px-4 rounded text-center transition-all-custom">
+                                GitHub
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Project 2 -->
+                <div class="bg-[#1E656D] rounded-xl shadow-lg overflow-hidden">
+                    <div class="h-48 bg-[#00293C] flex items-center justify-center gallery-item" data-gallery="projects1" data-index="0">
+                        <img src="images/mov4.png" alt="" class="certificate-img">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-2xl font-bold mb-2">Movies Management System</h3>
+                        <p class="mb-4">A movie management system that keeps track of movies by storing their title, director, year of release, and genre. It helps organize movie records in a simple and easy way.</p>
+                        
+                        <div class="flex flex-wrap gap-2 mb-6">
+                            <span class="bg-[#00293C] text-sm px-3 py-1 rounded-full">HTML</span>
+                            <span class="bg-[#00293C] text-sm px-3 py-1 rounded-full">CSS</span>
+                            <span class="bg-[#00293C] text-sm px-3 py-1 rounded-full">JavaScript</span>
+                            <span class="bg-[#00293C] text-sm px-3 py-1 rounded-full">Tailwind</span>
+                            <span class="bg-[#00293C] text-sm px-3 py-1 rounded-full">PHP</span>
+                            <span class="bg-[#00293C] text-sm px-3 py-1 rounded-full">Laravel</span>
+                        </div>
+                        
+                        <div class="flex space-x-4">
+                            <button class="view-project-btn flex-1 bg-[#F62A00] hover:bg-red-700 text-white font-medium py-2 px-4 rounded text-center transition-all-custom" data-gallery="projects1" data-index="0">
+                                View Project
+                            </button>
+                            <a href="https://github.com/Vicentedelidiii/Delid_midterm_project.git" class="flex-1 border border-[#F62A00] text-[#F62A00] hover:bg-[#F62A00] hover:text-white font-medium py-2 px-4 rounded text-center transition-all-custom">
+                                GitHub
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-16 px-4 bg-[#1E656D]/20">
+        <div class="container mx-auto max-w-2xl">
+            <h2 class="text-3xl font-bold text-center mb-12">Get In Touch</h2>
+            
+            <form class="bg-[#1E656D] p-6 md:p-8 rounded-xl shadow-lg">
+                <div class="mb-6">
+                    <label for="name" class="block mb-2 font-medium">Full Name</label>
+                    <input type="text" id="name" class="w-full p-3 bg-[#00293C] border border-[#00293C] rounded-lg focus:outline-none focus:border-[#F62A00] text-white transition-all-custom" placeholder="Your name">
+                </div>
+                
+                <div class="mb-6">
+                    <label for="email" class="block mb-2 font-medium">Email Address</label>
+                    <input type="email" id="email" class="w-full p-3 bg-[#00293C] border border-[#00293C] rounded-lg focus:outline-none focus:border-[#F62A00] text-white transition-all-custom" placeholder="your.email@example.com">
+                </div>
+                
+                <div class="mb-6">
+                    <label for="message" class="block mb-2 font-medium">Message</label>
+                    <textarea id="message" rows="5" class="w-full p-3 bg-[#00293C] border border-[#00293C] rounded-lg focus:outline-none focus:border-[#F62A00] text-white transition-all-custom" placeholder="Your message..."></textarea>
+                </div>
+                
+                <button type="submit" class="w-full bg-[#F62A00] hover:bg-red-700 text-white font-bold py-3 px-4 rounded-lg transition-all-custom shadow-lg">
+                    Send Message
+                </button>
+            </form>
+            
+            <!-- Alternative Contact Info -->
+            <div class="mt-12 text-center">
+                <h3 class="text-xl font-bold mb-6">Or reach out directly</h3>
+                <div class="flex flex-col md:flex-row justify-center items-center gap-20">
+                    <a href="mailto:vicentedelidiii@gmail.com" class="flex items-center gap-2 hover:text-[#F62A00] transition-all-custom">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="bi bi-envelope" viewBox="0 0 16 16">
+  <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1zm13 2.383-4.708 2.825L15 11.105zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741M1 11.105l4.708-2.897L1 5.383z"/>
+</svg>
+                    </a>
+                    <a href="https://github.com/Vicentedelidiii" class="flex items-center gap-2 hover:text-[#F62A00] transition-all-custom">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="bi bi-github" viewBox="0 0 16 16">
+  <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8"/>
+</svg>
+                    </a>
+                    <a href="https://www.linkedin.com/in/vicente-iii-delid-272572399/" class="flex items-center gap-2 hover:text-[#F62A00] transition-all-custom">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="bi bi-linkedin" viewBox="0 0 16 16">
+                            <path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854zm4.943 12.248V6.169H2.542v7.225zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248S2.4 3.226 2.4 3.934c0 .694.521 1.248 1.327 1.248zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016l.016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225z"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-8 px-4 bg-[#1E656D] text-center">
+        <div class="container mx-auto">
+            <p class="text-[#F1F3CE]/70">Designed and built with Artificial Intelligence.</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript for Mobile Menu and Image Modal -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile menu functionality
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            
+            mobileMenuButton.addEventListener('click', function() {
+                mobileMenu.classList.toggle('hidden');
+            });
+            
+            // Close mobile menu when clicking a link
+            const mobileLinks = document.querySelectorAll('#mobile-menu a');
+            mobileLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    mobileMenu.classList.add('hidden');
+                });
+            });
+            
+            // Add active state to navigation links based on scroll position
+            const sections = document.querySelectorAll('section');
+            const navLinks = document.querySelectorAll('nav a');
+            
+            window.addEventListener('scroll', function() {
+                let current = '';
+                
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    const sectionHeight = section.clientHeight;
+                    
+                    if (scrollY >= (sectionTop - 200)) {
+                        current = section.getAttribute('id');
+                    }
+                });
+                
+                navLinks.forEach(link => {
+                    link.classList.remove('text-[#F62A00]');
+                    if (link.getAttribute('href') === `#${current}`) {
+                        link.classList.add('text-[#F62A00]');
+                    }
+                });
+            });
+            
+            // Image Modal functionality
+            const modal = document.getElementById('imageModal');
+            const modalImage = document.getElementById('modalImage');
+            const imageCounter = document.getElementById('imageCounter');
+            const modalClose = document.querySelector('.modal-close');
+            const prevBtn = document.querySelector('.modal-nav.prev');
+            const nextBtn = document.querySelector('.modal-nav.next');
+            
+            // Sample image galleries (in a real project, these would be actual image URLs)
+            const galleries = {
+                certificates: [
+                    'images/cer1.jpg',
+                    'images/cer2.jpg',
+                    'images/cer3.jpg',
+                    'images/cer4.jpg',
+                    'images/cer5.png'
+                ],
+                projects: [
+                    'images/gun-1.png',
+                    'images/gun-2.png',
+                    'images/gun-3.png',
+                    'images/gun-4.png',
+                    'images/gun-5.png'
+                ],
+                projects1: [
+                    'images/mov4.png',
+                    'images/mov3.png',
+                    'images/mov2.png',
+                    'images/mov1.png'
+                ]
+            };
+            
+            let currentGallery = '';
+            let currentIndex = 0;
+            
+            // Function to open modal with specific gallery and index
+            function openModal(galleryName, index) {
+                currentGallery = galleryName;
+                currentIndex = index;
+                modalImage.src = galleries[galleryName][index];
+                imageCounter.textContent = `${index + 1} / ${galleries[galleryName].length}`;
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden'; // Prevent scrolling when modal is open
+            }
+            
+            // Function to close modal
+            function closeModal() {
+                modal.classList.remove('active');
+                document.body.style.overflow = 'auto';
+            }
+            
+            // Function to navigate to previous image
+            function prevImage() {
+                if (currentGallery) {
+                    currentIndex = (currentIndex - 1 + galleries[currentGallery].length) % galleries[currentGallery].length;
+                    modalImage.src = galleries[currentGallery][currentIndex];
+                    imageCounter.textContent = `${currentIndex + 1} / ${galleries[currentGallery].length}`;
+                }
+            }
+            
+            // Function to navigate to next image
+            function nextImage() {
+                if (currentGallery) {
+                    currentIndex = (currentIndex + 1) % galleries[currentGallery].length;
+                    modalImage.src = galleries[currentGallery][currentIndex];
+                    imageCounter.textContent = `${currentIndex + 1} / ${galleries[currentGallery].length}`;
+                }
+            }
+            
+            // Event listeners for certificate and project buttons
+            document.querySelectorAll('.view-certificate-btn, .view-project-btn, .gallery-item').forEach(button => {
+                button.addEventListener('click', function() {
+                    const gallery = this.getAttribute('data-gallery');
+                    const index = parseInt(this.getAttribute('data-index'));
+                    openModal(gallery, index);
+                });
+            });
+            
+            // Event listeners for modal controls
+            modalClose.addEventListener('click', closeModal);
+            prevBtn.addEventListener('click', prevImage);
+            nextBtn.addEventListener('click', nextImage);
+            
+            // Close modal when clicking outside the image
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    closeModal();
+                }
+            });
+            
+            // Keyboard navigation
+            document.addEventListener('keydown', function(e) {
+                if (modal.classList.contains('active')) {
+                    if (e.key === 'Escape') {
+                        closeModal();
+                    } else if (e.key === 'ArrowLeft') {
+                        prevImage();
+                    } else if (e.key === 'ArrowRight') {
+                        nextImage();
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
